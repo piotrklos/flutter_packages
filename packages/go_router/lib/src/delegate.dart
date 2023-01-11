@@ -79,6 +79,19 @@ class GoRouterDelegate extends RouterDelegate<RouteMatchList>
   void push(RouteMatchList matches) {
     assert(matches.last.route is! ShellRouteBase);
 
+    for (final RouteMatch match in matches.matches) {
+      if (match.route is ShellRoute) {
+        final bool aleradyInStack = _matchList.matches.any(
+          (RouteMatch addedMatch) =>
+              addedMatch.route is ShellRoute &&
+              addedMatch.pageKey == match.pageKey,
+        );
+        if (!aleradyInStack) {
+          _matchList.push(match);
+        }
+      }
+    }
+
     // Remap the pageKey to allow any number of the same page on the stack
     final int count = (_pushCounts[matches.fullpath] ?? 0) + 1;
     _pushCounts[matches.fullpath] = count;
